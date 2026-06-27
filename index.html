@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveCam Signals — Live Now</title>
+  <meta name="description" content="Watch live cam performers streaming right now. Free to watch, no signup required." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="LiveCam Signals — Live Now" />
+  <meta property="og:description" content="Watch live cam performers streaming right now. Free to watch." />
+  <meta property="og:type" content="website" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #07080f;
+      --surface:  #0e1019;
+      --card:     #121520;
+      --border:   #1c2135;
+      --blue:     #4169e1;
+      --blue-dim: #2a4ab5;
+      --blue-glow:rgba(65,105,225,.18);
+      --text:     #dde1f0;
+      --muted:    #7a80a0;
+      --live:     #e14141;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7,8,15,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo span {
+      color: var(--blue);
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--live);
+      box-shadow: 0 0 6px var(--live);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; } 50% { opacity:.35; }
+    }
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .header-cta a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .header-cta a:hover { text-decoration: underline; }
+
+    /* ── Main ── */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .section-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .count-badge {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--blue-dim);
+      box-shadow: 0 8px 32px var(--blue-glow);
+    }
+
+    .thumb-wrap {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .thumb-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .35s;
+    }
+    .card:hover .thumb-wrap img {
+      transform: scale(1.04);
+    }
+
+    .badge-live {
+      position: absolute;
+      top: 8px; left: 8px;
+      background: var(--live);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .badge-hd {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: rgba(65,105,225,.85);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .viewers {
+      position: absolute;
+      bottom: 8px; left: 8px;
+      background: rgba(7,8,15,.75);
+      color: var(--text);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .viewers svg { opacity:.7; }
+
+    .card-body {
+      padding: 12px 14px;
+    }
+    .card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-meta {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .gender-pill {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 999px;
+      letter-spacing: .03em;
+    }
+    .gf   { background:rgba(225,65,145,.15); color:#e141a0; border:1px solid rgba(225,65,145,.3); }
+    .gc   { background:rgba(65,105,225,.15); color:#7aa4f5; border:1px solid rgba(65,105,225,.3); }
+    .gm   { background:rgba(65,200,165,.15); color:#41c8a0; border:1px solid rgba(65,200,165,.3); }
+
+    .card-topic {
+      margin-top: 8px;
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-cta {
+      margin-top: 12px;
+      display: block;
+      width: 100%;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .card-cta:hover { background: var(--blue-dim); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Loading / Error ── */
+    .state-box {
+      grid-column: 1/-1;
+      padding: 64px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .card-cta { padding: 6px; font-size: 12px; }
+      header { padding: 0 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">
+    <div class="live-dot"></div>
+    LiveCam<span>Signals</span>
+  </a>
+  <div class="header-cta">
+    <span>Free to watch &mdash;</span>
+    <a href="https://bngacams.com/track?c=18144" target="_blank" rel="noopener">Join now →</a>
+  </div>
+</header>
+
+<main>
+  <div class="section-header">
+    <h1>Live Now</h1>
+    <span class="count-badge" id="count-badge">loading…</span>
+  </div>
+  <div class="grid" id="grid">
+    <div class="state-box">
+      <div class="spinner"></div>
+      <p>Fetching live rooms…</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>All performers are adults (18+). &nbsp;|&nbsp;
+    <a href="https://bongacams.com/track?c=18144" target="_blank" rel="noopener">Powered by BongaCams</a>
+    &nbsp;|&nbsp; For adults only.
+  </p>
+</footer>
+
+<script>
+  const API = 'https://bngprm.com/promo.php?c=18144&type=api&api_v=1&limit=10&api_type=json';
+
+  function genderLabel(g) {
+    if (!g) return { label: '?', cls: 'gm' };
+    const l = g.toLowerCase();
+    if (l.includes('couple')) return { label: 'Couple', cls: 'gc' };
+    if (l.includes('female')) return { label: 'Female', cls: 'gf' };
+    if (l.includes('male'))   return { label: 'Male',   cls: 'gm' };
+    return { label: g, cls: 'gm' };
+  }
+
+  function fmtViewers(n) {
+    if (!n) return '0';
+    if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/,'') + 'k';
+    return n.toString();
+  }
+
+  function buildCard(p) {
+    const img = (p.profile_images?.thumbnail_image_big_live || p.profile_images?.thumbnail_image_big || '').replace(/^\/\//, 'https://');
+    // Use chat_url_on_home_page — already contains c=18144 revshare + csurl pointing to the specific room
+    const link = p.chat_url_on_home_page || `https://bngprm.com/promo.php?type=direct_link&v=2&c=18144&models[]=${p.username}`;
+    const topic = (p.chat_topic || '').trim();
+    const { label, cls } = genderLabel(p.gender);
+
+    return `
+      <a class="card" href="${link}" target="_blank" rel="noopener nofollow">
+        <div class="thumb-wrap">
+          <img src="${img}" alt="${p.display_name || p.username}" loading="lazy" />
+          <span class="badge-live">LIVE</span>
+          ${p.hd_cam ? '<span class="badge-hd">HD</span>' : ''}
+          <span class="viewers">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/></svg>
+            ${fmtViewers(p.members_count)}
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="card-name">${p.display_name || p.username}</div>
+          <div class="card-meta">
+            <span>${p.display_age ? p.display_age + ' yo' : ''}</span>
+            <span class="gender-pill ${cls}">${label}</span>
+            ${p.vibratoy ? '<span title="Interactive toy">💜</span>' : ''}
+          </div>
+          ${topic ? `<div class="card-topic">${topic}</div>` : ''}
+          <span class="card-cta">Watch Free →</span>
+        </div>
+      </a>`;
+  }
+
+  async function load() {
+    const grid  = document.getElementById('grid');
+    const badge = document.getElementById('count-badge');
+    try {
+      const res  = await fetch(API);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const rooms = Array.isArray(data) ? data : (data.models || data.performers || []);
+      if (!rooms.length) throw new Error('No rooms returned');
+      badge.textContent = rooms.length + ' live';
+      grid.innerHTML = rooms.map(buildCard).join('');
+    } catch (e) {
+      console.warn('Fetch failed, using embedded snapshot:', e);
+      // ── Embedded fallback snapshot ──
+      const fallback = [{"username":"Girl-Pleasure","display_name":"Cinnabon_ga","display_age":30,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/04a/18d/1fc/f9fd7493a4124bc9bce7c6b8c5f983f6_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/04a/18d/1fc/xbig/73ad36.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/Girl-Pleasure","chat_topic":"Show me your love @remain","gender":"Female","members_count":4490,"hd_cam":true,"vibratoy":true},{"username":"Logan-emma","display_name":"Emmanyxxx","display_age":20,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/05a/33b/262/a0f8beb3c471fd83c290e9ade6b0e5ae_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/05a/33b/262/xbig/bf5d5f.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/Logan-emma","chat_topic":"Hi! Goal: Sex Show +CUM. New videos in bio. Fav vibrations 11..33.35..222tk","gender":"Couple Female + Male","members_count":2222,"hd_cam":true,"vibratoy":true},{"username":"PrettyKatea","display_name":"_Katrinka_","display_age":21,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/07b/142/1f1/9c1f2d54aa822c932a7970b027bc3b40_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/07b/142/1f1/xbig/0926dd.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/PrettyKatea","chat_topic":"Lovense works from 3 tokens! Fav vibrato: 55, 222, 444, 999","gender":"Couple Female + Female","members_count":1557,"hd_cam":true,"vibratoy":true},{"username":"NaomiHita","display_name":"NaomiHita","display_age":29,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/0e3/284/385/bf4f70def1e18e40c6b67f84e234533d_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/0e3/284/385/xbig/93883a.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/NaomiHita","chat_topic":"","gender":"Female","members_count":1111,"hd_cam":false,"vibratoy":true},{"username":"LinaTwins","display_name":"Slim_baby","display_age":19,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/0d2/327/13c/b0728ef61cdd6eafaf3b07d4b832bc37_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/0d2/327/13c/xbig/99fcc1.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/LinaTwins","chat_topic":"Will we do a hot show? Custom videos available — examples in profile","gender":"Couple Female + Male","members_count":1013,"hd_cam":false,"vibratoy":false},{"username":"GgggLAAAAaaFFtt596rr","display_name":"-Lili","display_age":26,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/0d2/014/03b/9892f46bc387331ebecbe1a2c357fc9e_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/0d2/014/03b/xbig/fcd3cd.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/GgggLAAAAaaFFtt596rr","chat_topic":"Lovense fav vibro 37, 77, 97tk. Wave 77tk. Earthquake 97tk.","gender":"Female","members_count":848,"hd_cam":true,"vibratoy":true},{"username":"Kris-and-Vanessa","display_name":"Kris-and-Vanessa","display_age":27,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/0ea/202/3d6/ad6ebeffd69aa63f19dffa5ff9a8d4fd_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/0ea/202/3d6/xbig/4ba620.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/Kris-and-Vanessa","chat_topic":"Countdown to goal — like and subscribe! ♡","gender":"Couple Female + Female","members_count":726,"hd_cam":false,"vibratoy":true},{"username":"Buzzyd","display_name":"Buzzyd","display_age":21,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/0da/359/2e0/d406d5cbd4ac56659d7e951c44eab9ec_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/0da/359/2e0/xbig/f92579.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/Buzzyd","chat_topic":"Welcome to the stream! Like and subscribe ❤️ Let's reach new heights together!","gender":"Couple Female + Male","members_count":649,"hd_cam":false,"vibratoy":false},{"username":"ValeenQueen","display_name":"ValeenQueen","display_age":26,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/0eb/1b5/21e/74329c42c798637fac41ea65a5943361_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/0eb/1b5/21e/xbig/f3e451.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/ValeenQueen","chat_topic":"Your World Cup Queen, ready to bet with you!! #queen #latina #sexy #lush","gender":"Female","members_count":637,"hd_cam":false,"vibratoy":true},{"username":"SallyeLeins","display_name":"SallyeLeins","display_age":24,"profile_images":{"thumbnail_image_big":"//i.bgicdn.com/02a/14c/083/10c7bf50e22fd395ffe09449e263df16_thumb_big.jpg","thumbnail_image_big_live":"//i.bgicdn.com/live/02a/14c/083/xbig/01194f.jpg"},"chat_url_on_home_page":"https://bongacams.com/track?c=18144&csurl=https://bongacams.com/SallyeLeins","chat_topic":"Lush in Ass! Niagara Big Squirt Show 1111tkns ❤️ Fav vibration 44-111-222-666","gender":"Female","members_count":564,"hd_cam":true,"vibratoy":true}];
+      badge.textContent = fallback.length + ' live';
+      grid.innerHTML = fallback.map(buildCard).join('');
+    }
+  }
+
+  load();
+  // Refresh every 5 minutes
+  setInterval(load, 5 * 60 * 1000);
+</script>
+</body>
+</html>
